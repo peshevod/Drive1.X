@@ -42,12 +42,20 @@
 */
 
 #include "mcc_generated_files/mcc.h"
+#include "L99SM81V_Interface.h"
+#include "timers.h"
+#include "shell.h"
+
 
 /*
                          Main application
  */
 void main(void)
 {
+    GSB_t gsb;
+    uint8_t info;
+    char buf[16];
+
     // initialize the device
     SYSTEM_Initialize();
 
@@ -66,9 +74,30 @@ void main(void)
     // Disable the Peripheral Interrupts
     //INTERRUPT_PeripheralInterruptDisable();
 
+    timers_init();
+    L99SM81V_SpiInit();
+    L99SM81V_ExitShutdown();
+    
+    send_chars("Init...\n");
+    
     while (1)
     {
-        // Add your application code
+        for(uint8_t i=0;i<10;i++)
+        {
+            send_chars("before\n");
+            gsb=L99SM81V_SpiReadDeviceInformation(i, &info);
+            send_chars("after\n");
+            send_chars("address=");
+            send_chars(ui8tox(i,buf));
+            send_chars(" info=");
+            send_chars(ui8tox(info,buf));
+            send_chars("\n");
+            send_chars(" gsb=");
+            send_chars(ui8tox(gsb,buf));
+            send_chars("\n");
+        }
+        send_chars("\n");
+        delay_ms(1000);
     }
 }
 /**
