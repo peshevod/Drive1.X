@@ -41,6 +41,7 @@ GSB_t L99SM81V_SpiWriteRegisters(uint8_t cRegAddress, uint8_t* out_buffer, uint8
     in_buffer[0]=SPI1_ExchangeByte(out_buffer[0]);
     in_buffer[1]=SPI1_ExchangeByte(out_buffer[1]);
     CSN_SetHigh();
+    return gsb;
 }
 
 GSB_t L99SM81V_SpiReadRegisters(uint8_t cRegAddress, uint8_t* in_buffer)
@@ -54,6 +55,7 @@ GSB_t L99SM81V_SpiReadRegisters(uint8_t cRegAddress, uint8_t* in_buffer)
     in_buffer[0]=SPI1_ExchangeByte(b);
     in_buffer[1]=SPI1_ExchangeByte(b);
     CSN_SetHigh();
+    return gsb;
 }
 
 
@@ -67,6 +69,7 @@ GSB_t L99SM81V_SpiReadClearRegisters(uint8_t cRegAddress, uint8_t* out_mask, uin
     in_buffer[0]=SPI1_ExchangeByte(out_mask[0]);
     in_buffer[1]=SPI1_ExchangeByte(out_mask[1]);
     CSN_SetHigh();
+    return gsb;
 }
 
 GSB_t L99SM81V_SpiReadDeviceInformation(uint8_t cRegAddress, uint8_t* in_buffer)
@@ -80,6 +83,7 @@ GSB_t L99SM81V_SpiReadDeviceInformation(uint8_t cRegAddress, uint8_t* in_buffer)
     in_buffer[0]=SPI1_ExchangeByte(b);
     b1=SPI1_ExchangeByte(b);
     CSN_SetHigh();
+    return gsb;
 }
 
 

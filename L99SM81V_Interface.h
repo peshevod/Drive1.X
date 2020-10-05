@@ -13,6 +13,9 @@ extern "C" {
 #endif
     
 #include <stdint.h>
+    
+#define GCR1    0x03
+#define MCR1    0x05
 
 typedef struct
 {

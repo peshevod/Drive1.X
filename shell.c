@@ -5,8 +5,8 @@
 #include "timers.h"
 
 __eeprom _par _pars[]={
-    {PAR_UI32,'F',{ 433000000UL } },  // base frequency
-    {PAR_UI8,'M',{ 0xA0 } }, // modulation MOD_2FSK
+    {PAR_UI8,'F',{ 0xFF } },  // period
+    {PAR_UI8,'M',{ 0x04} }, // prescaler
     {PAR_UI32,'R',{ 12500UL }}, // datarate
     {PAR_UI32,'W',{ 50000UL }}, // bandwidth
     {PAR_UI32,'D',{ 12500UL }}, // freq_deviation

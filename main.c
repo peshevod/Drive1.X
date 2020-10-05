@@ -55,6 +55,9 @@ void main(void)
     GSB_t gsb;
     uint8_t info;
     char buf[16];
+    uint8_t reg[2];
+    uint8_t reg1[2];
+    uint8_t s,p;
 
     // initialize the device
     SYSTEM_Initialize();
@@ -78,26 +81,56 @@ void main(void)
     L99SM81V_SpiInit();
     L99SM81V_ExitShutdown();
     
-    send_chars("Init...\n");
-    
+    send_chars("Init Drive1...\n\r");
+    start_x_shell();
     while (1)
     {
-        for(uint8_t i=0;i<10;i++)
+        for(uint8_t i=0;i<11;i++)
         {
-            send_chars("before\n");
             gsb=L99SM81V_SpiReadDeviceInformation(i, &info);
-            send_chars("after\n");
             send_chars("address=");
             send_chars(ui8tox(i,buf));
             send_chars(" info=");
             send_chars(ui8tox(info,buf));
-            send_chars("\n");
             send_chars(" gsb=");
             send_chars(ui8tox(gsb,buf));
-            send_chars("\n");
+            send_chars("\n\r");
         }
-        send_chars("\n");
+        CTRL3_SetLow();
+        send_chars("\n\r");
+        gsb=L99SM81V_SpiReadRegisters(GCR1, reg);
+        send_chars("GCR1=");
+        send_chars(ui8tox(reg[0],buf));
+        send_chars(" ");
+        send_chars(ui8tox(reg[1],buf));
+        send_chars("\n\r");
+        gsb=L99SM81V_SpiReadRegisters(MCR1, reg);
+        send_chars("MCR1=");
+        send_chars(ui8tox(reg[0],buf));
+        send_chars(" ");
+        send_chars(ui8tox(reg[1],buf));
+        send_chars("\n\r");
+        if(!(reg[0]&0x80))
+        {
+            reg[0]|=0x80;
+            gsb=L99SM81V_SpiWriteRegisters(MCR1, reg, reg1);
+        };
+ /*       for(int j=0;j<1000;j++)
+        {
+            CTRL1_SetHigh();
+            delay_us(10);
+            CTRL1_SetLow();
+            delay_ms(1);
+        }  */ 
+        set_s('F',&s);
+        TMR2_Period8BitSet(s);
+        set_s('M',&p);
+        T2CON=0x80|(p<<4);
+        TMR2_Start();
         delay_ms(1000);
+        TMR2_Stop();
+            
+        delay_ms(5000);
     }
 }
 /**
