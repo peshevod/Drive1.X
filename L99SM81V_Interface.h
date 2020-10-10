@@ -14,6 +14,9 @@ extern "C" {
     
 #include <stdint.h>
     
+#define GSR     0x01
+#define MSR     0x02
+#define GCR1    0x03
 #define GCR1    0x03
 #define MCR1    0x05
 #define MCR2    0x06

@@ -68,7 +68,7 @@ void main(void)
     uint8_t info;
     char buf[16];
     uint8_t reg[2];
-    uint8_t reg1[2],reg2[2];
+    uint8_t reg1[2],reg2[2],gsr[2],msr[2];
     uint8_t s,p,f,n,a;
     uint32_t spi_speed;
     uint32_t freq[8]={1000000,2000000,4000000,8000000,12000000,16000000,32000000,0};
@@ -149,6 +149,20 @@ void main(void)
         }
         CTRL3_SetLow();
         send_chars("\n\r");
+        
+        gsb=L99SM81V_SpiReadRegisters(GSR, gsr);
+        send_chars("GSR=");
+        send_chars(ui8tox(gsr[0],buf));
+        send_chars(" ");
+        send_chars(ui8tox(gsr[1],buf));
+        
+        gsb=L99SM81V_SpiReadRegisters(MSR, gsr);
+        send_chars(" MSR=");
+        send_chars(ui8tox(gsr[0],buf));
+        send_chars(" ");
+        send_chars(ui8tox(gsr[1],buf));
+        send_chars("\n\r");
+        
         gsb=L99SM81V_SpiReadRegisters(GCR1, reg);
         send_chars("GCR1=");
         send_chars(ui8tox(reg[0],buf));
@@ -161,7 +175,7 @@ void main(void)
         send_chars(ui8tox(reg[0],buf));
         send_chars(" ");
         send_chars(i32toa((int)((reg[1]&0x7E)*90/32),buf));
-        send_chars("MCR2=");
+        send_chars(" MCR2=");
         send_chars(ui8tox(reg2[0],buf));
         send_chars(" ");
         send_chars(ui8tox(reg2[1],buf));
