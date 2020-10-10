@@ -13,11 +13,11 @@
   @Description:
     This header file provides implementations for driver APIs for all modules selected in the GUI.
     Generation Information :
-        Product Revision  :  PIC10 / PIC12 / PIC16 / PIC18 MCUs - 1.81.4
+        Product Revision  :  PIC10 / PIC12 / PIC16 / PIC18 MCUs - 1.81.6
         Device            :  PIC16LF18446
         Driver Version    :  2.00
     The generated drivers are tested against the following:
-        Compiler          :  XC8 2.20 and above or later
+        Compiler          :  XC8 2.30 and above or later
         MPLAB             :  MPLAB X 5.40
 */
 
@@ -55,8 +55,8 @@ void SYSTEM_Initialize(void)
     OSCILLATOR_Initialize();
     PWM1_Initialize();
     TMR3_Initialize();
-    TMR2_Initialize();
     TMR5_Initialize();
+    TMR2_Initialize();
     TMR1_Initialize();
     TMR0_Initialize();
     EUSART1_Initialize();
