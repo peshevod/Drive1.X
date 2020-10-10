@@ -7,10 +7,9 @@
 __eeprom _par _pars[]={
     {PAR_UI8,'F',{ 0xFF } },  // period
     {PAR_UI8,'M',{ 0x04} }, // prescaler
-    {PAR_UI32,'R',{ 12500UL }}, // datarate
+    {PAR_UI8,'R',{ 0x00 }}, // step mode
     {PAR_UI32,'W',{ 50000UL }}, // bandwidth
-    {PAR_UI32,'D',{ 12500UL }}, // freq_deviation
-    {PAR_UI32,'S',{ 50354UL }}, // channel space
+    {PAR_UI8,'D',{ 0 }}, // decay mode
     {PAR_I32,'P',{ 0L }}, // power
 #ifndef HW_ASG9
     {PAR_UI8,'T',{ 1 }}, // transmit/rec

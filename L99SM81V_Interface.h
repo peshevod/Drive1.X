@@ -16,6 +16,7 @@ extern "C" {
     
 #define GCR1    0x03
 #define MCR1    0x05
+#define MCR2    0x06
 
 typedef struct
 {
@@ -28,6 +29,8 @@ typedef struct
     uint8_t GW:1;
     uint8_t FS:1;
 } GSB;
+
+
 
 #define GSB_t uint8_t
     
