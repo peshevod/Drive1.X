@@ -156,11 +156,11 @@ void main(void)
         send_chars(" ");
         send_chars(ui8tox(gsr[1],buf));
         
-        gsb=L99SM81V_SpiReadRegisters(MSR, gsr);
+        gsb=L99SM81V_SpiReadRegisters(MSR, msr);
         send_chars(" MSR=");
-        send_chars(ui8tox(gsr[0],buf));
+        send_chars(ui8tox(msr[0],buf));
         send_chars(" ");
-        send_chars(ui8tox(gsr[1],buf));
+        send_chars(ui8tox(msr[1],buf));
         send_chars("\n\r");
         
         gsb=L99SM81V_SpiReadRegisters(GCR1, reg);
@@ -184,6 +184,7 @@ void main(void)
         uint8_t decay_mode;
         set_s('D',&decay_mode);
         reg2[1]|=decay_mode<<6; //decay mode
+//        reg2[1]|=0x40; //ol detection time = 60 ms
         gsb=L99SM81V_SpiWriteRegisters(MCR2, reg2, reg1);
         uint8_t step_mode;
         set_s('R',&step_mode);
@@ -235,7 +236,26 @@ void main(void)
         max_steps=2000*tt;
         CTRL2_Toggle();
         TMR2_Start();
-        while(!intr) delay_ms(100);
+        while(!intr)
+        {
+            gsb=L99SM81V_SpiReadRegisters(GSR, gsr);
+            gsb=L99SM81V_SpiReadRegisters(MSR, msr);
+            if(gsr[0]||gsr[1]||msr[0]||msr[1])
+            {
+                send_chars("GSR=");
+                send_chars(ui8tox(gsr[0],buf));
+                send_chars(" ");
+                send_chars(ui8tox(gsr[1],buf));
+
+                send_chars(" MSR=");
+                send_chars(ui8tox(msr[0],buf));
+                send_chars(" ");
+                send_chars(ui8tox(msr[1],buf));
+                send_chars("\n\r");
+                gsb=L99SM81V_SpiReadClearRegisters(GSR, gsr, reg1);
+            }
+            delay_ms(10);
+        }
         intr=0;
  //       delay_ms(50*t*tt/1000);
  //       TMR2_Stop();
