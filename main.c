@@ -59,6 +59,26 @@ void TMR2_MyInterruptHandler(void){
     }
 }
 
+void FW_ButtonInterruptHandler(void){
+    if(!FW_GetValue())
+    {
+        CTRL2_SetLow();
+        TMR2_Start();
+    }
+    else TMR2_Stop();
+}
+
+
+void REV_ButtonInterruptHandler(void){
+    if(!REV_GetValue())
+    {
+        CTRL2_SetHigh();
+        TMR2_Start();
+    }
+    else TMR2_Stop();
+}
+
+
 /*
                          Main application
  */
@@ -73,6 +93,8 @@ void main(void)
     uint32_t spi_speed;
     uint32_t freq[8]={1000000,2000000,4000000,8000000,12000000,16000000,32000000,0};
     uint32_t fosc;
+    uint32_t tt;
+    uint8_t step_mode;
 
     // initialize the device
     SYSTEM_Initialize();
@@ -97,6 +119,9 @@ void main(void)
     count=0;
     intr=0;
     TMR2_SetInterruptHandler(TMR2_MyInterruptHandler);
+//    PIE4bits.TMR2IE = 0; //disable tmr2 interrupt
+    IOCAF4_SetInterruptHandler(FW_ButtonInterruptHandler);
+    IOCAF5_SetInterruptHandler(REV_ButtonInterruptHandler);
 
     L99SM81V_SpiInit();
     f=OSCFRQbits.HFFRQ;
@@ -130,6 +155,11 @@ void main(void)
     send_chars(" SSP1ADD=");
     send_chars(ui8tox(SSP1ADD,buf));
     send_chars("\r\n");
+    
+    set_s('R',&step_mode);
+    if(step_mode!=0) tt=0x00000008>>(step_mode-1);
+    else tt=16;
+    max_steps=2000*tt;
     
     L99SM81V_ExitShutdown();
     
@@ -186,8 +216,6 @@ void main(void)
         reg2[1]|=decay_mode<<6; //decay mode
 //        reg2[1]|=0x40; //ol detection time = 60 ms
         gsb=L99SM81V_SpiWriteRegisters(MCR2, reg2, reg1);
-        uint8_t step_mode;
-        set_s('R',&step_mode);
         reg[0]|=step_mode; // ministep
             gsb=L99SM81V_SpiWriteRegisters(MCR1, reg, reg1);
             send_chars(" MCR1 after write=");
@@ -228,14 +256,11 @@ void main(void)
         send_chars(ui32toa((fosc/(4*s))>>p,buf));
         send_chars("Hz\r\n");
         TMR2_Period8BitSet(s);
-        T2CON=0x80|(p<<4); // prescaler
+        T2CONbits.CKPS=p; // prescaler
 
-        uint32_t tt;
-        if(step_mode!=0) tt=0x00000008>>(step_mode-1);
-        else tt=16;
-        max_steps=2000*tt;
-        CTRL2_Toggle();
-        TMR2_Start();
+//        CTRL2_Toggle();
+//        TMR2_Start();
+        intr=0;
         while(!intr)
         {
             gsb=L99SM81V_SpiReadRegisters(GSR, gsr);
@@ -253,7 +278,10 @@ void main(void)
                 send_chars(ui8tox(msr[1],buf));
                 send_chars("\n\r");
                 gsb=L99SM81V_SpiReadClearRegisters(GSR, gsr, reg1);
+            
             }
+            if(!FW_GetValue()) send_chars("FW PRESSED\r\n");
+            if(!REV_GetValue()) send_chars("REV PRESSED\r\n");
             delay_ms(10);
         }
         intr=0;
